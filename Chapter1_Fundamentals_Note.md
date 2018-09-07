@@ -201,6 +201,115 @@ private class ListIterator implements Iterator<Item> {
 
 ## 1.5
 动态连通性问题<br>
+union-find算法的API<br>
+
+```
+public class UF{
+    UF(int N);  //  以整数标识(0到N-1)初始化N个触点
+    void union(int p, int q);   //  在p和q之间添加一条连接
+    int find(int p);    //  p所在的分量的标识符
+    boolean connected(int p, int q);    //  判断p、q是否连通
+    int count;  //  连通分量的数量
+}
+```
 算法:<br>
-1. quick-find
-2. 
+quick-find算法：<br>
+p和q是连通的当且仅当id[p]==id[q]，即同一个连通分量中任意一个触点的id都是相等的。<br>
+则为了达到这一效果，每次都要遍历整个数组，将所有和id[p]相等的元素的值变成id[q]的值。
+
+```
+public int find(int p){
+    return id[p];
+}
+public void union(int p, int q){
+    int pID = find(p);
+    int qID = find(q);
+    if(pID == qID)  return;
+    for(int i=0; i<id.length; i++){
+        if(id[i] == pID)
+            id[i] == qID;
+    }
+    count--;
+}
+```
+quick-find算法分析<br>
+归并两个分量的union()访问数组次数在(N+3)到(2N+1)之间，至少调用N-1次union，时间复杂度为O(N^2)
+<br>
+
+<br>
+quick-union算法<br>
+每个触点对应的id都是同一个分量中另一个触点的名称。即根据这个触点的id，可以链接到另一个触点。<br>
+如何实现union？<br>
+把p的根触点链接到q的根触点上（最后形成了一棵触点树（森林)
+<br>
+
+<br>
+
+
+```
+public int find(int p){
+    while(p != id[p]){
+        p = id[p];
+    }
+    return p;
+}
+public void union(int p, int q){
+    int pRoot = find(p);
+    int qRoot = find(q);
+    if(pRoot == qRoot)  return;
+    id[pRoot] = qRoot;
+    count--;
+}
+```
+quick-union算法分析<br>
+quick-union就是quick-find的改良版，最遭的情况就是触点树的高度很高
+<br>
+
+<br>
+加权quick-union算法<br>
+记录每一棵树的大小，总将较小的树连到较大的树上<br>这样做的好处：扩展树的宽度，减少树的高度。
+<br>
+
+```
+/*
+ * 加权quick-union算法实现union-find。
+ */
+public class UF{
+    private int[] id;
+    private int[] sz;
+    private int count;
+    public UF(int N){
+        count = N;
+        id = new int[N];
+        sz = new int[N];
+        for(int i=0; i<N; i++){
+            id[i] = i;
+            sz[i] = 1;
+        }
+        
+    }
+    public int count(){
+        return count;
+    }
+    public boolean connected(int p, int q){
+        return find(p) == find(q);
+    }
+    public int find(int p){
+        while(p!=id[p]) p = id[p];
+        return p;
+    }
+    public void union(int p, int q){
+        int i = find(p);
+        int j = find(q);
+        if(i == j)  return;
+        if(sz[i] < sz[j]){
+            id[i] = j;
+            sz[j] += sz[i];
+        } else {
+            id[j] = i;
+            sz[i] += sz[j];
+        }
+        count--;
+    }
+}
+```
