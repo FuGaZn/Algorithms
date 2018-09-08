@@ -1,5 +1,5 @@
 ## 1.4
-1.4.14
+1.4.14<br>
 https://github.com/FuGaZn/LeetCode/blob/master/Algorithms/18_4Sum.java
 
 1.4.15<br>
@@ -147,6 +147,60 @@ public int fiboSearch(int[] a, int key){
 }
 ```
 
+1.4.24 扔鸡蛋<br>
+二分法<br>
+
+1.4.25 **扔两个鸡蛋**<br>
+最多扔2sqrt(N)次鸡蛋就能判断F的值<br>
+思路：第一个鸡蛋，在sqrt(N)、2sqrt(N)、3sqrt(N)..., sqrt(N)*sqrt(N)处扔下。如果在k * sqrt(N)处破碎，第二个鸡蛋就在(k-1)sqrt(N)到k * sqrt(N)之间扔下。<br>
+最多扔2sqrt(N)次鸡蛋。<br>
+
+改进算法：数学反推<br>
+先假设最多扔x次就能找到F的位置。<br>
+正确的方法是先假设最少判断次数为x，则第一个鸡蛋第一次从第x层扔（不管碎没碎，还有x-1次尝试机会）。如果碎了，则第二个鸡蛋在1～x-1层中线性搜索，最多x-1次；如果没碎，则第一个鸡蛋第二次从x+(x-1)层扔（现在还剩x-2次尝试机会）。如果这次碎了，则第二个鸡蛋在x+1～x+(x-1)-1层中线性搜索，最多x-2次；如果还没碎第一个鸡蛋再从x+(x-1)+(x-2)层扔，依此类推。x次尝试所能确定的最高楼层数为x+(x-1)+(x-2)+...+1=x(x+1)/2。<br>
+
+比如100层楼，用第一种算法，最多扔2*10=20次；用第二种算法，最多扔14次<br>
+
+推广：n层楼，扔m个鸡蛋<BR>
+需要用到动态规划:假设f[n,m]表示n层楼、m个鸡蛋时找到摔鸡蛋不碎的最少判断次数。则一个鸡蛋从第i层扔下，如果碎了，还剩m-1个鸡蛋，为确定下面楼层中的安全位置，还需要f[i-1,m-1]次（子问题）；不碎的话，上面还有n-i层，还需要f[n-i,m]次（子问题，实体n层楼的上n-i层需要的最少判断次数和实体n-i层楼需要的最少判断次数其实是一样的）。
+> 状态转移方程：f[n,m] = min{ 1+max(f[i-1,m-1], f[n-i,m]) | i＝1..n } 初始条件：f[i,0]=0（或f[i,1]=i），对所有i
+
+[【算法】楼层扔鸡蛋问题](https://blog.csdn.net/mermaidz/article/details/11819585)
+
+1.4.26 三点共线<br>
+a+b+c=0是(a, a^3), (b, b^3), (c, c^3)三点共线的充要条件。
+
+1.4.27 用两个栈实现队列<br>
+
+```
+public Queue<Item>{
+    Stack<Item> A = new Stack();
+    Stack<Item> B = new Stack();
+    
+    public int size(){
+        return A.size()+B.size();
+    }
+    
+    public boolean isEmpty(){
+        return A.isEmpty() || B.isEmpty();
+    }
+    
+    public void enqueue(Item item){
+        A.push(item);
+    }
+    
+    public Item dequeue(){
+        if(B.isEmpty()){
+            while(!A.isEmpty()){
+                B.push(A.pop());
+            }
+            B.pop();
+        }else{
+            B.pop();
+        }
+    }
+}
+```
 
 
 
