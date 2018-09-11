@@ -38,3 +38,18 @@ public static void sort(Comparable[] a) {
     }
 }
 ```
+2.1.25<br>
+
+```
+public static void sort(Comparable[] a){
+    int N = a.length;
+    for(int i = 1; i<N; i++){
+        Comparable tmp = a[i];
+        int j;
+        for(j=i-1; j>=0 && less(tmp, a[j]); j--){
+            a[j+1] = a[j];
+        }
+        a[j+1] = tmp;
+    }
+}
+```
