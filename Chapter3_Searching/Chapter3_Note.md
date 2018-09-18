@@ -146,15 +146,18 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 private static final boolean RED 	= true;
 private static final boolean BLACK	= false;
 private class Node {
-	Key key;	//键
-  	Value val;	//值
-  	Node left, right;
-  	int N;	//该子树中结点总数
-  	boolean color;
+  Key key;	//键
+  Value val;	//值
+  Node left, right;
+  int N;	//该子树中结点总数
+  boolean color;
+  Node(Key key, Value val, int N, boolean color){
+  	// statements
+  }
 }
 private boolean isRed(Node x) {
-  	if(x == null)	return false;
-  	return x.color == RED;
+  if(x == null)	return false;
+  return x.color == RED;
 }
 ```
 
@@ -194,4 +197,80 @@ Node rotateRight (Node h) {
 
 
 
-红黑二叉树的插入
+**红黑二叉树的插入**
+
+插入时默认链接是红色。
+
+- 向单个2-结点插入新键 两种情况：
+
+  - 新键小于老键：把新键插入在老键左边，并形成了一条红色的左链接
+  - 新键大于老键：新建插入在右边，形成一个红色的右链接，此时需要rotateLeft
+
+- 向树底部的2-结点插入新键
+
+  用红链接将新结点和父节点相连。是否旋转情况同上
+
+- 向一棵双键树（即一个3-结点）插入新键
+
+  - 新键大于两个老键：此时最简单，把新键直接链接到3-结点的右侧，再把两条链接都变成黑色。此时的树就是平衡的。
+  - 新键小于两个老键：新键被链接到3-结点左侧，此时产生两条连续的红链接。此时要把上层的红链接右转得到第一种情况。
+  - 新键在两个老键之间：新键链接到较小老键的右侧，此时产生两条连续的红链接：一条红左，一条红右。此时需要把下层红链接左转即可得到第二种情况。（下层左转+上层右转得到第一种情况）
+
+
+- 向树底部的3-结点插入新键
+
+  ​
+
+什么时候应该旋转？
+
+- 如果右子节点是红色而左子节点是黑色，进行左旋转
+
+- 如果左子节点是红色而且它的左子节点也是红色，进行右旋转
+
+- 如果左右子节点均为红色，进行颜色转换
+
+  颜色转换flipColors：子节点从红变黑，父节点由黑变红（根结点永远黑色）
+
+
+
+红黑树插入算法的实现：
+
+```java
+public class RedBlackBST<Key extends Comparable<Key>, Value> {
+  private Node root;
+  
+  private class Node;
+  
+  private boolean isRed(Node h);
+  private Node rotateLeft(Node h);
+  private Node rotateRight(Node h);
+  private int size();
+  
+  private void flipColors(Node h){
+    h.color = RED;
+    h.left.color = BLACK;
+    h.right.color = BLACK;
+  }
+  
+  public void put(Key key, Value val){
+    root = put(root, key, val);
+    root.color = BLACK;
+  }
+  
+  private Node put(Node h, Key key, Value val){
+    if(h == null)	return new Node(key, val, 1, RED);
+    int cmp = key.compareTo(h.key);
+    if(cmp<0)		h.left = put(h.left, key, val);
+    else if(cmp>0)	h.right = put(h.right, key, val);
+    else	h.val = val;
+    
+    if(isRed(h.right) && !isRed(h.left))	h = rotateLeft(h);
+    if(isRed(h.left) && isRed(h.left.left))	h = rotateRight(h);
+    if(isRed(h.right) && isRed(h.left))		flipColors(h);
+    
+    h.N = size(h.left) + size(h.right) + 1;
+    return h;
+  }
+}
+```
+
