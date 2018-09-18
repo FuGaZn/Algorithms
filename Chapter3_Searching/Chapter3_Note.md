@@ -1,4 +1,4 @@
-# <center>查找</center>
+# 查找
 三种经典的数据类型：二叉查找树，红黑树，散列表
 ## 3.1 符号表
 符号表最主要的目的就是将一个键和一个值联系起来。<br>
@@ -31,7 +31,7 @@
 
 二叉查找树中的删除：
 
-```
+```Java
 public Node delete(Node x, Key key){
     if(x == null)   return null;
     int cmp = key.compareTo(x.key);
@@ -70,7 +70,7 @@ public Key min(Node x){
 
 二叉查找树的范围查找：
 
-```
+```Java
 private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
     if(x == null)   return;
     int cmplo = lo.compareTo(x.key);
@@ -87,11 +87,28 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 > - 2-结点，含有一个键或两条链接。左链接指向的2-3树中的键都小于该节点，右链接指向的2-3树中的键都大于该节点。
 > - 3-结点，含有两个键和三条链接。左链接指向的2-3树中的键都小于该节点，中链接指向的2-3树中的键都在该结点的两个键之间，右链接指向的2-3树中的键都大于该节点。
 
-![image style="width=260px"](https://github.com/FuGaZn/Algorithms/raw/master/img/2-3Tree.jpg)
-
+![image style="width=200px"](../img/2-3Tree.jpg)
 
 指向一棵空树的链接称为空链接。
 
-
 一棵完美平衡的2-3查找树中的所有空链接到根结点的距离都应该是相同的
 
+在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN个
+
+2-3查找树中的插入
+
+- 向2-结点中插入：把原来的2-结点变为3-结点就行
+
+- 向一棵只有3-结点的树中插入：
+
+  先把值插入到3-结点，使之临时变成4-结点，再把结点的中间值提出，作为父节点，而左右两个值则变成该父节点的子节点。
+
+- 向一个父节点为2-结点的3-结点中插入：
+
+  设父节点为A，3-结点为B，向B中插入一个值，B裂变成一个具有两个子节点的2-结点，记为C。
+
+  再把C结点和A结点合并成新结点A‘![image style="width=100px"](../img/3.3.5.jpg)
+
+- ​
+
+- <img src="../img/3.3.5"/>
