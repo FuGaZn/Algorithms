@@ -111,4 +111,4 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 
 - ​
 
-- <img src="../img/3.3.5"/>
+- <img src="@../img/3.3.5"/>
