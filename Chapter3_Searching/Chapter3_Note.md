@@ -87,13 +87,15 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 > - 2-结点，含有一个键或两条链接。左链接指向的2-3树中的键都小于该节点，右链接指向的2-3树中的键都大于该节点。
 > - 3-结点，含有两个键和三条链接。左链接指向的2-3树中的键都小于该节点，中链接指向的2-3树中的键都在该结点的两个键之间，右链接指向的2-3树中的键都大于该节点。
 
-![image style="width=200px"](../img/2-3Tree.jpg)
+![](../img/2-3Tree.jpg)
 
 指向一棵空树的链接称为空链接。
 
 一棵完美平衡的2-3查找树中的所有空链接到根结点的距离都应该是相同的
 
-在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN个
+在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN
+
+
 
 2-3查找树中的插入
 
@@ -109,6 +111,87 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 
   再把C结点和A结点合并成新结点A‘![image style="width=100px"](../img/3.3.5.jpg)
 
-- ​
+- 向一个父节点为3-结点的3-结点中插入：
 
-- <img src="../img/3.3.5"/>
+  参加第三点，依次向上裂变合并
+
+  ![](../img/3.3.6.jpg)
+
+
+
+
+红黑二叉查找树：
+
+基本思想：用标准的二叉查找树和一些额外信息来表示2-3树。将树中的链接分为两种：**红链接**将两个2-结点连接起来构成一个3-结点，**黑链接**则是2-3树中的普通链接。
+
+这样，对于任意2-3树，只要对结点进行转换，都可以派生出一棵二叉查找树。这种二叉查找树称为红黑二叉查找树。
+
+
+
+红黑树的另一种定义：含有红黑链接并满足以下条件的二叉查找树：
+
+- 红链接均为左链接
+- 没有任何一个结点和同时和两条红链接相连
+- 该树是**完美黑色平衡**的，即任意链接到根结点的路径上的黑链接数量相同。
+
+![](../img/3.3.13.jpg)
+
+
+
+红黑树的颜色表示：
+
+用一个boolean型变量color表示指向某结点的链接的颜色。
+
+```java
+private static final boolean RED 	= true;
+private static final boolean BLACK	= false;
+private class Node {
+	Key key;	//键
+  	Value val;	//值
+  	Node left, right;
+  	int N;	//该子树中结点总数
+  	boolean color;
+}
+private boolean isRed(Node x) {
+  	if(x == null)	return false;
+  	return x.color == RED;
+}
+```
+
+
+
+红黑树的旋转：
+
+左旋转：将红色的右链接转化为左链接。左旋转实际上就是在两个键中，原来是将较小的键作为根结点，现在要把较大的键作为根结点，较小的键作为左子节点。
+
+右旋转：相反。
+
+![](../img/3.3.16.jpg)
+
+```java
+// 左旋转
+Node rotateLeft (Node h) {
+  	Node x = h.right;
+  	h.right = x.left;
+  	x.left = h;
+  	x.color = h.color;
+  	x.N = h.N;
+  	h.N = 1+size(h.left)+size(h.right);
+  	return x;
+}
+
+// 右旋转
+Node rotateRight (Node h) {
+  	Node x = h.left;
+  	h.left = x.right;
+  	x.right = h;
+  	x.color = h.color;
+  	x.N = h.N;
+  	h.N = 1+size(h.left)+size(h.right);
+  	return x;
+}
+```
+
+
+
+红黑二叉树的插入
