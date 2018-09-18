@@ -219,8 +219,6 @@ Node rotateRight (Node h) {
 
 - 向树底部的3-结点插入新键
 
-  ​
-
 什么时候应该旋转？
 
 - 如果右子节点是红色而左子节点是黑色，进行左旋转
@@ -273,4 +271,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
   }
 }
 ```
+
+
+
+红黑二叉树的删除：
 
