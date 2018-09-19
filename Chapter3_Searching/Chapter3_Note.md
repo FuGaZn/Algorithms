@@ -211,24 +211,24 @@ private boolean isRed(Node x) {
 ```java
 // 左旋转
 Node rotateLeft (Node h) {
-  	Node x = h.right;
-  	h.right = x.left;
-  	x.left = h;
-  	x.color = h.color;
-  	x.N = h.N;
-  	h.N = 1+size(h.left)+size(h.right);
-  	return x;
+  Node x = h.right;
+  h.right = x.left;
+  x.left = h;
+  x.color = h.color;
+  x.N = h.N;
+  h.N = 1+size(h.left)+size(h.right);
+  return x;
 }
 
 // 右旋转
 Node rotateRight (Node h) {
-  	Node x = h.left;
-  	h.left = x.right;
-  	x.right = h;
-  	x.color = h.color;
-  	x.N = h.N;
-  	h.N = 1+size(h.left)+size(h.right);
-  	return x;
+  Node x = h.left;
+  h.left = x.right;
+  x.right = h;
+  x.color = h.color;
+  x.N = h.N;
+  h.N = 1+size(h.left)+size(h.right);
+  return x;
 }
 ```
 
@@ -322,6 +322,10 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 - 如果当前结点的左子结点不是2-结点，完成
 - 如果当前结点的左子结点是2-结点且亲兄弟结点不是2-结点，将左子结点的兄弟结点中的一个键移动到左子结点中。
 - 如果当前结点的左子结点和它的亲兄弟结点都是2-结点，将左子结点、父节点中的最小键和左子结点最近的兄弟结点合并成一个4-结点，使父节点由3-结点变2-结点或由4-结点变3-结点。
+
+
+
+## 3.4 散列表
 
 
 
