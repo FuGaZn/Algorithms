@@ -69,3 +69,88 @@ public AVLNode delete(AVLNode node, int val){
 
 
 
+3.3.39 删除最小键
+
+```java
+private Node moveRedLeft(Node h){
+  flipColors(h);
+  if(isRed(h.right.left)){
+    h.right = rotateRight(h.right);
+    h = rotateLeft(h);
+  }
+  return h;
+}
+
+public void deleteMin(){
+  if(!isRed(root.left) && !isRed(root.right))
+    root.color = RED;
+  root = deleteMin(root);
+  if(!isEmpty())
+    root.color = BLACK;
+}
+
+private Node deleteMin(Node h){
+  if(h.left == null)
+    return null;
+  if(!isRed(h.left) && !isRed(h.left.left))
+    h = moveRedLeft(h);
+  h.left = deleteMin(h.left);
+  return balance(h);
+}
+
+private void flipColors(Node h) {
+  h.color = !h.color;
+  h.left.color = !h.left.color;
+  h.right.color = !h.right.color;
+}
+```
+
+
+
+3.3.40 删除最大键
+
+
+
+3.3.41 **红黑树的删除**
+
+```java
+public void delete(Key key){
+  if(!isRed(root.left) && !isRed(root.right))
+    root.color = RED;
+  root = delete(root, key);
+  if(!isEmpty())
+    root.color = BLACK;
+}
+
+private Node delete(Node h, Key key){
+  if(key.compareTo(h.key) < 0){
+    if(!isRed(h.left) && !isRed(h.left.left))
+      h = moveRedLeft(h);
+    h.left = delete(h.left, key);
+  }else{
+    if(isRed(h.left))
+      h = rotateRight(h);
+    if(key.compareTo(h.key) == 0 && h.right == null)
+      return null;
+    if(!isRed(h.right) && !isRed(h.right.left))
+      h = moveRedRight(h);
+    if(key.compareTo(h.key) == 0){
+      h.val = get(h.right, min(h.right).key);
+      h.key = min(h.right).key;
+      h.right = deleteMin(h.right);
+    }else
+      h.right = delete(h.right, key);
+  }
+  return balance(h);
+}
+
+private Node balance(Node h) {
+  if (isRed(h.right))                      h = rotateLeft(h);
+  if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
+  if (isRed(h.left) && isRed(h.right))     flipColors(h);
+
+  h.size = size(h.left) + size(h.right) + 1;
+  return h;
+}
+```
+
