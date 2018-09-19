@@ -128,7 +128,7 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 
 指向一棵空树的链接称为空链接。
 
-一棵完美平衡的2-3查找树中的所有空链接到根结点的距离都应该是相同的
+**<u>一棵完美平衡的2-3查找树中的所有空链接到根结点的距离都应该是相同的</u>**
 
 在一棵大小为N的2-3树中，查找和插入操作访问的结点必然不超过lgN
 
@@ -157,7 +157,7 @@ private void keys(Node x, Queue<Key> queue, Key lo, Key hi){
 
 
 
-红黑二叉查找树：
+### 红黑二叉查找树
 
 基本思想：用标准的二叉查找树和一些额外信息来表示2-3树。将树中的链接分为两种：**红链接**将两个2-结点连接起来构成一个3-结点，**黑链接**则是2-3树中的普通链接。
 
@@ -326,6 +326,68 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
 
 ## 3.4 散列表
+
+使用散列的查找算法分两步，第一步是用散列函数将被查找的键转化为数组的一个索引。第二步则是处理碰撞冲突。
+
+解决碰撞冲突的方法：拉链法和线性探测法
+
+
+
+一个优秀的散列方法要满足三个条件：
+
+- 一致性：等价的键必然产生等价的散列值
+- 高效性：计算简便
+- 均匀性：均匀地散列所有键。
+
+
+
+拉链法：将大小为M的数组中的每个元素都指向一条链表，链表中的每个结点都存储了散列值作为该元素的索引的键值对。
+
+```java
+import edu.princeton.cs.algs4.SequentialSearchST;
+
+public class SeparateChainingHashST<Key, Value>{
+    private int N;	// 键值对总数
+    private int M;	// 散列表大小
+    private SequentialSearchST<Key, Value>[] st;	// 存放链表对象的数组
+
+    public SeparateChainingHashST(){
+        this(997);
+    }
+
+    public SeparateChainingHashST(int M){
+        this.M = M;
+        st = (SequentialSearchST<Key, Value>[]) new SequentialSearchST[M];
+        for(int i=0; i<M; i++)
+            st[i] = new SequentialSearchST<>();
+    }
+
+    private int hash(Key key){
+        return (key.hashCode() & 0x7fffffff) % M;
+    }
+
+    public Value get(Key key){
+        return (Value) st[hash(key)].get(key);
+    }
+
+    public void put(Key key, Value val){
+        st[hash(key)].put(key, val);
+    }
+  	
+  	public boolean delete(Key key){
+        st[hash(key)].delete(key);
+        return true;
+    }
+}
+```
+
+在一张含有M条链表和N个键的散列表中，未命中查找和插入操作所需的比较次数为~N/M
+
+
+
+线性探测法：
+
+
 
 
 
