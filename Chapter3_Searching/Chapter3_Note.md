@@ -29,9 +29,25 @@
 在由N个随机键构造的二叉查找树中，查找命中的平均所需比较次数为~2lgN
 <br>
 
-二叉查找树中的删除：
+二叉查找树中的删除/插入/查找：
 
 ```Java
+public class BST<Key extends Comparable<Key>, Value> {
+  private Node root;
+  private class Node {
+    private Key key;
+    private Value val;
+    private Node left, right;
+    private int N;	//该子树中结点总数
+    
+    private Node(Key k, Value v, int N){
+      // statements
+    }
+  }
+  
+  // functions
+}
+
 public Node delete(Node x, Key key){
     if(x == null)   return null;
     int cmp = key.compareTo(x.key);
@@ -60,11 +76,32 @@ public Node deleteMin(Node x){
     return x;
 }
 
-public Key min(Node x){
+public Node min(Node x){
     while(x.left!=null){
         x = x.left;
     }
-    return x.val;
+    return x;
+}
+
+public Value get(Node x, Key key){
+  if(x == null){
+  	return null;
+  }
+  int cmp = key.comparableTo(x.key);
+  if(cmp<0)	return get(x.left, key);
+  eles if(cmp>0)	return get(x.right, key);
+  else return x.val;
+}
+
+public void put(Node node, Key key, Value val){
+  if (x==null)	return new Node(key, val, 1);
+  int cmp = key.comparableTo(x.key);
+  if(cmp<0)	x.left = put(x.left, key, val);
+  else if(cmp>0)	x.right = put(x.right, key ,val);
+  else x.val = val;
+  
+  x.N = size(x.left) + size(x.right) + 1;
+  return x;
 }
 ```
 
@@ -195,6 +232,8 @@ Node rotateRight (Node h) {
 }
 ```
 
+<br>
+
 
 
 **红黑二叉树的插入**
@@ -274,5 +313,15 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
 
 
 
-红黑二叉树的删除：
+**红黑二叉树的删除**：
+
+删除掉一个2-结点会破坏树的完美平衡性。
+
+删除最小键操作中的变换：在沿着左链接向下的过程中，保证以下情况之一成立
+
+- 如果当前结点的左子结点不是2-结点，完成
+- 如果当前结点的左子结点是2-结点且亲兄弟结点不是2-结点，将左子结点的兄弟结点中的一个键移动到左子结点中。
+- 如果当前结点的左子结点和它的亲兄弟结点都是2-结点，将左子结点、父节点中的最小键和左子结点最近的兄弟结点合并成一个4-结点，使父节点由3-结点变2-结点或由4-结点变3-结点。
+
+
 
