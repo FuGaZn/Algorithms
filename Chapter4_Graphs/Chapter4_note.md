@@ -51,16 +51,7 @@ public int V();	//顶点数
 public int E();	//边数
 public addEdge(int v, int w);	//添加一条边v-w
 public Interable<Integer> adj(int v);	// 和v相邻的所有顶点
-public String toString(){
-  String s = V + " vertices, " + E + " edges\n";
-  for(int v = 0; v < V; v++){
-    s+=v+": ";
-    for(int w: this.adj(v))
-      s+=w+" ";
-    s+"\n";
-  }
-  return s;
-}
+public String toString();
 
 public static int degree(Graph G, int v){
   int degree = 0;
@@ -92,5 +83,127 @@ public static int numberOfSelfLoops(Graph G){
 
 
 
-图的表示方法
+### 图的表示方法：邻接表
+
+将每个顶点的所有相邻结点都保存在该顶点对应的元素所指向的一张链表中。
+
+这个链表可以用Bag来实现（链表中所有点与点之间并没有联系）
+
+```java
+import edu.princeton.cs.algs4.Bag;
+import edu.princeton.cs.algs4.In;
+
+import java.util.Iterator;
+
+public class Graph {
+    private final int V;
+    private int E;
+    private Bag<Integer>[] adj;
+
+    public Graph(int V) {
+        this.V = V;	//读取V并将图初始化
+        this.E = 0;
+        adj = (Bag<Integer>[]) new Bag[V];
+        for (int v = 0; v < V; v++)
+            adj[v] = new Bag<Integer>();
+    }
+
+    public Graph(In in) {
+        this(in.readInt());
+        int E = in.readInt();
+        for (int i = 0; i < E; i++) {
+            int v = in.readInt();
+            int w = in.readInt();
+            addEdge(v, w);
+        }
+    }
+
+    public int V() {
+        return V;
+    }
+
+    public int E() {
+        return E;
+    }
+
+    public void addEdge(int v, int w) {
+        adj[v].add(w);
+        adj[w].add(v);
+        E++;
+    }
+
+    public Iterable<Integer> adj(int v) {
+        return adj[v];
+    }
+
+    public String toString() {
+        String s = V + " vertices, " + E + " edges\n";
+        for (int v = 0; v < V; v++) {
+            s += v + ": ";
+            for (int w : this.adj(v))
+                s += w + " ";
+            s += "\n";
+        }
+        return s;
+    }
+}
+```
+
+
+
+### 深度优先搜索	DFS
+
+```java
+public class DepthFirstSearch {
+  private boolean[] marked;
+  private int count;
+  
+  public DepthFirstSearch(Graph G, int s){
+    marked = new boolean[G.V()];
+    dfs(G, s)
+  }
+  
+  private void dfs(Graph G, int v){
+  	marked[v] = true;
+    count++;
+    for(int w: G.adj(v))
+      if(!marked[w])	dfs(G, w);
+  }
+}
+```
+
+使用深度优先搜索得到的从给定起点到任意标记顶点的路径所需时间与路径的长度成正比。
+
+
+
+### 广度优先搜索	BFS
+
+实现思路：使用一个队列来保存所有已经被标记过的但其领接表还未被检查的顶点。重复以下步骤:
+
+- 取队列中的下一个顶点v并标记它。
+- 将与v相邻的所有未被标记过的顶点加入到队列。
+
+```java
+private void bfs(Graph G, int s){
+  Queue<Integer> queue = new Queue<Integer>();
+  marked[s] = true;
+  queue.enqueue(s);
+  while(!queue.isEmpty()){
+  	int v = queue.dequeue();
+    for(int w : G.adj(v))
+      if(!marked[w]){
+        marked[w] = true;
+        queue.enqueue(w);
+      }
+  }
+}
+```
+
+对于从s可达的任意顶点v，广度优先搜索都能找到一条从s到v的最短路径。
+
+广度优先搜索所需时间在最坏情况下和V+E成正比。
+
+
+
+### 连通分量
 
