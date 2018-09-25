@@ -207,3 +207,73 @@ private void bfs(Graph G, int s){
 
 ### 连通分量
 
+使用深度优先搜索来找出图中所有的连通分量：
+
+```java
+public class CC{
+  private boolean[] marked;
+  private int[] id;
+  private int count;
+  public CC(Graph G){
+    marked = new boolean[G.V()];
+    id = new int[G.V()];
+    for(int s = 0; s<G.V(); s++){
+      if(!marked[s]){
+        dfs(G, s);
+        count++;
+      }
+    }
+  }
+  
+  private void dfs(Graph G, int v){
+    marked[v] = true;
+    id[v] = count;
+    for(int w: G.adj(v))
+      if(!marked[w])
+        dfs(G, w);
+  }
+  
+  public int id(int v){
+    return id[v];
+  }
+  
+  public int count(){
+    return count;
+  }
+}
+```
+
+深度优先搜索处理其他问题的事例：
+
+双色问题（能否用两种颜色将图中所有顶点着色，即判断是否是二分图）：
+
+```java
+private void dfs(Graph G, int v){
+  marked[v] = true;
+  for(int w: G.adj(v))
+    if(!marked[w]){
+      color[w] = !color[v];
+      dfs(G, w);
+    }
+  	else if(color[w] == color[v])	isTwoColorable = false;
+}
+```
+
+**判断无环图**（假设不存在自环或平行边）
+
+```java
+public void dfs(Graph G, int v, int u){
+  marked[v] = true;
+  for(int w: G.adj(v))
+    if(!marked[w])
+      dfs(G, w, v);
+  	else if(w != u)	hasCycle = true;
+}
+```
+
+
+
+
+
+## 有向图
+
