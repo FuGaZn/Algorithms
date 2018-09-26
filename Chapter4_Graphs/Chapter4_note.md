@@ -440,11 +440,15 @@ public class Topological {
 
 
 
-计算强连通分量：Kosaraju算法：
+计算强连通分量：**Kosaraju算法**
 
 - 在有向图G中，计算它的反向图(Digraph.reverse)的逆后序排列(DepthFirstOrder.reversePost)
 - 在G中进行标注的深度优先搜索，但是要按照刚才得到的顶点顺序来访问所有未被标记的顶点
 - 所有在同一个dfs()调用中被访问到的顶点都在同一个强连通分量中。
+
+对算法正确性的证明：
+
+![](../img/kosaraju.jpg)
 
 代码：
 
