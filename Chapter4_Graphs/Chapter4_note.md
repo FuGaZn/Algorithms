@@ -502,3 +502,103 @@ public class KosarajuCC {
 
 > 有向图G的传递闭包是由相同的一组顶点组成的另一幅有向图，在传递闭包中存在一条从v指向w的边当且仅当在G中w是从v可达的。
 
+<br>
+
+## 最小生成树
+
+> 图的生成树是它的一棵含有其所有顶点的无环连通子图。一幅加权图的最小生成树(MST)是它的一棵权值最小的生成树。
+
+最下生成树只可能出现在连通图中。
+
+边的权重可以是0或负数。且所有边的权重都各不相同（如果不同边的权重可以相同，最小生成树就不一定唯一了）
+
+切分定理：
+
+> 在一幅加权图中，给定任意的切分，它的横切边中的权重最小者必然属于图的最小生成树
+
+贪心算法求最小生成树：
+
+初始状态下所有边均为灰色，找到一种切分，它产生的横切边均不为黑色。将它权重最小的横切边标记为黑色。如此反复，知道标记了V-1条黑色边为止。
+
+<br>
+
+带权重的边的数据模型:
+
+```java
+public class Edge implements Comparable<Edge> {
+    private final int v;
+    private final int w;
+    private final double weight;
+
+    public Edge(int v, int w, double weight) {
+        this.v = v;
+        this.w = w;
+        this.weight = weight;
+    }
+
+    public double weight() {
+        return weight;
+    }
+
+    public int either() {
+        return v;
+    }
+
+    public int other(int vertex) {
+        if (vertex == v) return w;
+        else if (vertex == w) return v;
+        else throw new RuntimeException("Inconsistent edge");
+    }
+
+    public int compareTo(Edge that) {
+        if (this.weight() < that.weight()) return -1;
+        else if (this.weight() > that.weight()) return 1;
+        return 0;
+    }
+}
+```
+
+<br>
+
+
+
+### Prim算法
+
+prim算法的延时实现
+
+```java
+import edu.princeton.cs.algs4.*;
+
+public class LazyPrimMST {
+    private boolean[] marked;
+    private Queue<Edge> mst;
+    private MinPQ<Edge> pq;
+
+    private LazyPrimMST(EdgeWeightedGraph G) {
+        pq = new MinPQ<>();
+        marked = new boolean[G.V()];
+        mst = new Queue<>();
+
+        visit(G, 0);
+        while (!pq.isEmpty()) {
+            Edge e = pq.delMin();
+            int v = e.either(), w = e.other(v);
+            if (marked[v] && marked[w]) continue;
+            mst.enqueue(e);
+            if (!marked[v]) visit(G, v);
+            if (!marked[w]) visit(G, w);
+        }
+    }
+
+    private void visit(EdgeWeightedGraph G, int v) {
+        marked[v] = true;
+        for (Edge e : G.adj(v))
+            if (!marked[e.other(v)]) pq.insert(e);
+    }
+}
+```
+
+<br>
+
+prim算法的即时实现
+
