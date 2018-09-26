@@ -178,7 +178,7 @@ public class DepthFirstSearch {
 
 ### 广度优先搜索	BFS
 
-实现思路：使用一个队列来保存所有已经被标记过的但其领接表还未被检查的顶点。重复以下步骤:
+实现思路：使用一个**<u>队列</u>**来保存所有已经被标记过的但其领接表还未被检查的顶点。重复以下步骤:
 
 - 取队列中的下一个顶点v并标记它。
 - 将与v相邻的所有未被标记过的顶点加入到队列。
@@ -273,7 +273,228 @@ public void dfs(Graph G, int v, int u){
 
 
 
+<br>
+
+在一幅连通图中，如果一条边被删除后图被分为两个独立的连通分量，这条边就被称为**桥**。
+
+没有桥的图称为边连通图。
+
 
 
 ## 有向图
+
+> 一幅有方向性的图（有向图）是由一组顶点和一组有方向的边组成的，每条有方向的边都连接着有序的一对顶点。
+
+我们称一条有向边由第一个顶点**指出**并**指向**第二个顶点。
+
+出度：某顶点指出的边的总数
+
+入度：指向某顶点的边的总数
+
+用v -> w表示一条由v指向w的边。v是边的头，w是边的尾。
+
+有向图的代码实现：
+
+```java
+import edu.princeton.cs.algs4.Bag;
+public class Digraph {
+    private final int V;
+    private int E;
+    private Bag<Integer>[] adj;
+
+    public Digraph(int V) {
+        this.V = V;
+        this.E = 0;
+        adj = (Bag<Integer>[]) new Bag[V];
+        for (int v = 0; v < V; v++)
+            adj[v] = new Bag<Integer>();
+    }
+
+    public void addEdge(int v, int w) {
+        adj[v].add(w);
+        E++;
+    }
+
+    public Iterable<Integer> adj(int v) {
+        return adj[v];
+    }
+  
+	/**
+     * 返回该图的一个反向副本。通过这个方法可以找到指向每个顶点的所有边
+     *
+     * @return Digraph
+     */
+    public Digraph reverse() {
+        Digraph R = new Digraph(V);
+        for (int v = 0; v < V; v++)
+            for (int w : adj(v))
+                R.addEdge(w, v);
+        return R;
+    }
+}
+```
+
+
+
+> 有向无环图就是一幅不含有向环的有向图。
+
+
+
+### 寻找有向环
+
+```java
+import edu.princeton.cs.algs4.Stack;
+
+public class DirectedCycle {
+    private boolean[] marked;
+    private int[] edgeTo;
+    private Stack<Integer> cycle;   // 有向环中的所有顶点
+    private boolean[] onStack;  // 递归调用的栈上的所有顶点
+
+    public DirectedCycle(Digraph G) {
+        onStack = new boolean[G.V()];
+        edgeTo = new int[G.V()];
+        marked = new boolean[G.V()];
+        for (int v = 0; v < G.V(); v++)
+            if (!marked[v])
+                dfs(G, v);
+    }
+
+    private void dfs(Digraph G, int v) {
+        onStack[v] = true;
+        marked[v] = true;
+        for (int w : G.adj(v)) {
+            if (this.hasCycle()) return;
+            else if (!marked[w]) {
+                edgeTo[w] = v;
+                dfs(G, w);
+            } else if (onStack[w]) {
+                cycle = new Stack<>();
+                for (int x = v; x != w; x = edgeTo[x]) {
+                    cycle.push(x);
+                }
+                cycle.push(w);
+                cycle.push(v);
+            }
+        }
+        onStack[v] = false;
+    }
+
+    public boolean hasCycle() {
+        return cycle != null;
+    }
+
+    public Iterable<Integer> cycle() {
+        return cycle;
+    }
+}
+```
+
+<br>
+
+**拓扑排序**：给定一幅有向图，将所有顶点排序，使得所有的有向边均从排在前面的元素指向排在后面的元素。
+
+一般来说，如果一个有优先级限制的问题中存在有向环，这个问题肯定是无解的。
+
+### 拓扑排序
+
+先判断是否存在有向环（有向环的检测是排序的前提），再调用基于深度优先搜索的逆后序排序方法
+
+```java
+public class Topological {
+    private Iterable<Integer> order;
+
+    public Topological(Digraph G) {
+        DirectedCycle cyclefinder = new DirectedCycle(G);
+        if (!cyclefinder.hasCycle()) {
+            DepthFirstOrder dfs = new DepthFirstOrder(G);
+            order = dfs.reversePost();
+        }
+    }
+
+    public boolean isDAG() {
+        return order != null;
+    }
+
+    public Iterable<Integer> order() {
+        return order;
+    }
+}
+```
+
+<br>
+
+### 强连通性
+
+> 如果两个顶点v和w是互相可达的，则称它们是强连通的。
+>
+> 如果一幅有向图中的任意两个顶点都是强连通的，则称这幅有向图也是强连通的。
+
+两个顶点是强连通的当且仅当它们都在一个普通的有向环中。
+
+任何顶点和自己都是强连通的（自反性）
+
+一个强连通图中只含有一个强连通分量，而一个有向无环图中则含有V个强连通分量。
+
+<br>
+
+
+
+计算强连通分量：Kosaraju算法：
+
+- 在有向图G中，计算它的反向图(Digraph.reverse)的逆后序排列(DepthFirstOrder.reversePost)
+- 在G中进行标注的深度优先搜索，但是要按照刚才得到的顶点顺序来访问所有未被标记的顶点
+- 所有在同一个dfs()调用中被访问到的顶点都在同一个强连通分量中。
+
+代码：
+
+```java
+public class KosarajuCC {
+    private boolean[] marked;
+    private int[] id;   //强连通分量的标识符
+    private int count;
+
+    public KosarajuCC(Digraph G) {
+        marked = new boolean[G.V()];
+        id = new int[G.V()];
+        DepthFirstOrder order = new DepthFirstOrder(G.reverse());
+        for (int s : order.reversePost()) {
+            if (!marked[s]) {
+                dfs(G, s);
+                count++;
+            }
+        }
+    }
+
+    public boolean stronglyConnected(int v, int w) {
+        return id[v] == id[w];
+    }
+
+    private void dfs(Digraph G, int v) {
+        marked[v] = true;
+        id[v] = count;
+        for (int w : G.adj(v))
+            if (!marked[w])
+                dfs(G, w);
+    }
+
+    public int id(int v) {
+        return id[v];
+    }
+
+    public int count() {
+        return count;
+    }
+}
+```
+
+
+
+
+
+### 可达性
+
+闭包：
+
+> 有向图G的传递闭包是由相同的一组顶点组成的另一幅有向图，在传递闭包中存在一条从v指向w的边当且仅当在G中w是从v可达的。
 

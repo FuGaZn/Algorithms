@@ -180,11 +180,5 @@ public class GraphProperties {
         }
     }
 }
-
 ```
 
-
-
-4.1.28
-
-修改cycle，允许存在自环和平行边。
