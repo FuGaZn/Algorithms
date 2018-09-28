@@ -700,3 +700,105 @@ public class KruskalMST {
 
 ## 最短路径
 
+几个注意点：
+
+- 路径是有向的
+- 权重不一定等价于距离：权重代表的是成本，可以指距离，也可以指时间等。
+- 权重可以是负值
+
+**最短路径树SPT**：
+
+> 给定一幅加权有向图和一个顶点s，以s为起点的一棵最短路径树是图的一幅子图，它包含s和从s可达的所有顶点。这棵有向树的根结点是s，树的每条路径都是有向图的一条最短路径。
+
+加权有向边：
+
+```java
+public class DirectedEdge {
+    private final int v;    //边的起点
+    private final int w;    //终点
+    private final double weight;    //权重
+
+    public DirectedEdge(int v, int w, int weight) {
+        this.v = v;
+        this.w = w;
+        this.weight = weight;
+    }
+
+    public double weight() {
+        return weight;
+    }
+  
+	// 指向这条边的起点
+    public int from() {
+        return v;
+    }
+  
+	// 指向这条边的终点
+    public int to() {
+        return w;
+    }
+}
+```
+
+<br>
+
+加权有向图：
+
+主要更改：addEdge方法
+
+```java
+public void addEdge(DirectedEdge e){
+  adj[e.from].add(e);
+  E++;
+}
+```
+
+<br>
+
+**最短路径**	
+
+API
+
+| public class SP                       |                         |
+| ------------------------------------- | ----------------------- |
+| SP(EdgeWeightedDigraph G, int s)      | 构造函数                    |
+| double distTo(int v)                  | 从顶点s到v的距离，如果不存在，代表路径无穷大 |
+| boolean hasPathTo(int v)              | 判断是否存在从顶点s到v 的路径        |
+| Iterable\<DirectedEdge> pathTo(int v) | 从顶点到v的路径，如果不存在则为null    |
+
+<br>
+
+边的松弛(relax)
+
+> 放松边v→w意味着检查从s到w的最短路径是否是先从s到v，再从v到w。如果是，则更新数据结构的内容。
+
+```java
+private void relax(DirectedEdge e){
+  int v = e.from(), w = e.to();
+  if(distTo[w] > distTo[v] + e.weight()) {
+  	distTo[w] = distTo[v] + e.weight();
+  	edgeTo[w] = e;
+  }
+}
+```
+
+顶点的松弛
+
+```java
+private void relax(EdgeWeightedDigraph G, int v){
+  for(DirectedEdge e : G.adj(v)){
+    int w = e.to();
+    if(distTo[w] > distTo[v] + e.weight()){
+      distTo[w] = distTo[v] + e.weight();
+      edgeTo[w] = e;
+    }
+  }
+}
+```
+
+<br>
+
+**Dijkstra算法**
+
+
+
