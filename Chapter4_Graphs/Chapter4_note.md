@@ -564,7 +564,7 @@ public class Edge implements Comparable<Edge> {
 
 ### Prim算法
 
-prim算法的延时实现
+Prim算法的延时实现
 
 ```java
 import edu.princeton.cs.algs4.*;
@@ -604,16 +604,23 @@ public class LazyPrimMST {
 
 <br>
 
-prim算法的即时实现
+Prim算法的即时实现
 
 对LazyPrimMST的改进：对于非树节点w，不需要在优先队列中保存所有从w到树顶点的边，而只要保留其中权重最小的那条边。而每次将节点v添加到树中时，只要检查是否需要更新这条边即可。
+
+Prim类的实现中有如下性质：
+
+- 如果顶点v不在树中但至少含有一条边可以将v和树相连，那么edgeTo[v]就是将v和树相连的最短边，distTo[v]就是这条边的权重
+- 所有这类顶点v都保留在一条索引优先队列中。索引v关联的值是edgeTo[v]的边的权重。
+
+
 
 ```java
 import edu.princeton.cs.algs4.*;
 
 public class PrimMST {
-    private Edge[] edgeTo;  //距离树最近的边
-    private double[] distTo;
+    private Edge[] edgeTo;  // 距离树最近的边
+    private double[] distTo;	// distTo[w]=edgeTo[w].weight()
     private boolean[] marked;
     private IndexMinPQ<Double> pq;
 
@@ -622,7 +629,7 @@ public class PrimMST {
         distTo = new double[G.V()];
         marked = new boolean[G.V()];
         for (int v = 0; v < G.V(); v++)
-            distTo[v] = Double.POSITIVE_INFINITY;
+            distTo[v] = Double.POSITIVE_INFINITY;	//distTo[v]的默认值是正无穷，即如果点v和树中间没有直接的边可连接，则distTo[v]以无穷来标记
         pq = new IndexMinPQ<>(G.V());
         distTo[0] = 0;
         pq.insert(0, 0.0);
@@ -653,4 +660,43 @@ public class PrimMST {
     }
 }
 ```
+
+<br>
+
+Kruskal算法
+
+按照边的权重顺序来处理它们，加入的边不会和已加入的构成环，直到树中含有$V-1$边为止
+
+实现算法：使用优先队列来将边按权重顺序排序，使用union-find来判断是否会构成环，使用一条队列来保存生成树的所有边。
+
+```java
+import edu.princeton.cs.algs4.*;
+
+public class KruskalMST {
+    private Queue<Edge> mst;
+
+    public KruskalMST(EdgeWeightedGraph G) {
+        mst = new Queue<>();
+        MinPQ<Edge> pq = new MinPQ<>();
+        for (Edge e : G.edges()) pq.insert(e);
+
+        UF uf = new UF(G.V());
+        while (!pq.isEmpty() && mst.size() < G.V() - 1) {
+            Edge e = pq.delMin();
+            int v = e.either(), w = e.other(v);
+            if (uf.connected(v, w)) continue;	//判断v和w是否是已连接状态
+            uf.union(v, w);
+            mst.enqueue(e);
+        }
+    }
+
+    public Iterable<Edge> edges() {
+        return mst;
+    }
+}
+```
+
+<br>
+
+## 最短路径
 
