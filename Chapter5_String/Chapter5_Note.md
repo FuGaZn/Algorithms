@@ -183,8 +183,6 @@ public class Quick3string {
 <br>
 
 ```java
-package Code;
-
 import edu.princeton.cs.algs4.*;
 
 public class TrieST<Value> {
@@ -334,4 +332,60 @@ public class TrieST<Value> {
     }
 }
 ```
+
+单词查找树的链表结构和键的插入或删除顺序无关，对于任意给定的一组键，其单词查找树都是唯一的。
+
+R向查找树查找速度极快，但不适合处理来自大型字母表的大量长键，会造成大量空间的浪费。
+
+### 三向单词查找树TST
+
+在三向单词查找树中，每个结点都含有一个字符、三条链接和一个值。这三条链接分别对应着当前字母小于、等于和大于结点字母的所有键。
+
+```java
+public class TST<Value> {
+    private Node root;
+
+    private class Node {
+        char c;
+        Node left, mid, right;
+        Value val;
+    }
+
+    public Value get(String key) {
+        Node x = get(root, key, 0);
+        if (x == null) return null;
+        return (Value) x.val;
+    }
+
+    private Node get(Node x, String key, int d) {
+        if (x == null) return null;
+        char c = key.charAt(d);
+        if (c < x.c) return get(x.left, key, d);
+        else if (c > x.c) return get(x.right, key, d);
+        else if (d < key.length() - 1)
+            return get(x.mid, key, d + 1);
+        else return x;
+    }
+
+    public void put(String key, Value val) {
+        root = put(root, key, val, 0);
+    }
+
+    private Node put(Node x, String key, Value val, int d) {
+        char c = key.charAt(d);
+        if (x == null) {
+            x = new Node();
+            x.c = c;
+        }
+        if (c < x.c) x.left = put(x.left, key, val, d);
+        if (c > x.c) x.right = put(x.right, key, val, d);
+        else if (d < key.length() - 1)
+            x.mid = put(x.mid, key, val, d + 1);
+        else x.val = val;
+        return x;
+    }
+}
+```
+
+三向单词查找树的链表结构取决于插入和删除的顺序。
 
