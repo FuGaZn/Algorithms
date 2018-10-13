@@ -422,31 +422,41 @@ public static int search(String pat, String txt) {
 - 匹配时，dfa\[pat.charAt(j)][j]总是j+1
 - 匹配失败时，可以根据数组知道前j-1个字符是什么。从左向右左移这一段，直到所有重叠的字符都相互匹配
 
+![](../img/5.3.6.jpg)
+
+每次匹配成功都会将DFA带向下一个状态，匹配失败就会使DFA回退到较早前的状态。
+
 ```java
-public class KMP{
-  private String pat;
-  private int[][] dfa;
-  public KMP(String pat){
-    this.pat = pat;
-    int M = pat.length();
-    int R = 256;
-    dfa = new int[R][M];
-    dfa[pat.charAt(0)][0] = 1;
-    for(int X = 0, j = 1; j < M; j++) {
-      for(int c = 0; c < R; c++)
-        dfa[c][j] = dfa[c][X];
-      dfa[pat.charAt(j)][j] = j+1;
-      X = dfa[pat.charAt(j)][X];
+package Code;
+
+public class KMP {
+    private String pat;
+    private int[][] dfa;
+
+    public KMP(String pat) {
+        this.pat = pat;
+        int M = pat.length();
+        int R = 256;
+        dfa = new int[R][M];
+        dfa[pat.charAt(0)][0] = 1;
+        for (int X = 0, j = 1; j < M; j++) {
+            for (int c = 0; c < R; c++)
+                dfa[c][j] = dfa[c][X];    // 复制匹配失败情况下的值
+            dfa[pat.charAt(j)][j] = j + 1;    // 设置匹配成功情况下的值
+            X = dfa[pat.charAt(j)][X];    // 更新重启状态
+        }
     }
-  }
-  
-  public int search(String txt) {
-    int i, j, N = txt.length(), M = pat.length();
-    for(i = 0; j = 0; i < N && j < M; i++)
-      j = dfa[txt.charAt(i)][j];
-    if(j == M) return i-M;
-    else return N;
-  }
+
+    public int search(String txt) {
+        int i, j, N = txt.length(), M = pat.length();
+        for (i = 0, j = 0; i < N && j < M; i++)
+            j = dfa[txt.charAt(i)][j];
+        if (j == M) return i - M;
+        else return N;
+    }
 }
 ```
 
+对于长度为M的模式字符串和长度为N的文本，KMP算法访问的字符不会超过M+N个
+
+[]: ./【算法】KMP经典算法，你真的懂了吗？
