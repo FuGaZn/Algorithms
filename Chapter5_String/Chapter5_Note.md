@@ -389,3 +389,64 @@ public class TST<Value> {
 
 三向单词查找树的链表结构取决于插入和删除的顺序。
 
+
+
+## 子字符串查找
+
+暴力子字符串匹配算法的一种显式回退的写法：
+
+```java
+public static int search(String pat, String txt) {
+  int j, M = pat.length();
+  int i, N = txt.length();
+  for(i=0; j=0; i<N && j<M; i++){
+    if(txt.charAt(i)==pat.charAt(j))
+      j++;
+    else { i-=j; j=0; }
+  }
+  if(j==M)	return i-M;	// 找到匹配
+  else	return N;	// 未找到匹配
+}
+```
+
+
+
+### Knuth-Morris-Pratt算法(KMP)
+
+基本思想：当出现不匹配时，就能知晓一部分文本的内容。
+
+在匹配失败时，如果模式字符串中的某处可以和匹配失败出的正文相匹配，那么就不应该完全跳过所有已经匹配的所有字符。
+
+用一个dfa\[][]数组来记录匹配失败时指针j应该回退多元。
+
+- 匹配时，dfa\[pat.charAt(j)][j]总是j+1
+- 匹配失败时，可以根据数组知道前j-1个字符是什么。从左向右左移这一段，直到所有重叠的字符都相互匹配
+
+```java
+public class KMP{
+  private String pat;
+  private int[][] dfa;
+  public KMP(String pat){
+    this.pat = pat;
+    int M = pat.length();
+    int R = 256;
+    dfa = new int[R][M];
+    dfa[pat.charAt(0)][0] = 1;
+    for(int X = 0, j = 1; j < M; j++) {
+      for(int c = 0; c < R; c++)
+        dfa[c][j] = dfa[c][X];
+      dfa[pat.charAt(j)][j] = j+1;
+      X = dfa[pat.charAt(j)][X];
+    }
+  }
+  
+  public int search(String txt) {
+    int i, j, N = txt.length(), M = pat.length();
+    for(i = 0; j = 0; i < N && j < M; i++)
+      j = dfa[txt.charAt(i)][j];
+    if(j == M) return i-M;
+    else return N;
+  }
+}
+```
+
