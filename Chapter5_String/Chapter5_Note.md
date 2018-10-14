@@ -459,5 +459,4 @@ public class KMP {
 
 对于长度为M的模式字符串和长度为N的文本，KMP算法访问的字符不会超过M+N个
 
-[]: https://github.com/FuGaZn/Algorithms/blob/master/Chapter5_String/KMP.md	"【算法】KMP经典算法，你真的懂了吗？"
-
+https://github.com/FuGaZn/Algorithms/blob/master/Chapter5_String/KMP.md
