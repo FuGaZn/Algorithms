@@ -427,13 +427,27 @@ public static int search(String pat, String txt) {
 每次匹配成功都会将DFA带向下一个状态，匹配失败就会使DFA回退到较早前的状态。
 
 ```java
-package Code;
+import edu.princeton.cs.algs4.In;
 
-public class KMP {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class KMP_DFA {
     private String pat;
     private int[][] dfa;
 
-    public KMP(String pat) {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String txt = sc.nextLine();
+        String pat = sc.nextLine();
+        KMP_DFA kmp_dfa = new KMP_DFA(pat);
+        List<Integer> list = kmp_dfa.search(txt);
+        for (Integer i : list)
+            System.out.println(i);
+    }
+
+    public KMP_DFA(String pat) {
         this.pat = pat;
         int M = pat.length();
         int R = 256;
@@ -447,16 +461,24 @@ public class KMP {
         }
     }
 
-    public int search(String txt) {
+    public List<Integer> search(String txt) {
+        List<Integer> list = new ArrayList<>();
         int i, j, N = txt.length(), M = pat.length();
-        for (i = 0, j = 0; i < N && j < M; i++)
+        for (i = 0, j = 0; i < N; i++) {
             j = dfa[txt.charAt(i)][j];
-        if (j == M) return i - M;
-        else return N;
+            if (j == M) {
+                list.add(i - M + 1);
+                j = 0;
+            }
+        }
+        return list;
     }
 }
 ```
 
 对于长度为M的模式字符串和长度为N的文本，KMP算法访问的字符不会超过M+N个
 
-https://github.com/FuGaZn/Algorithms/blob/master/Chapter5_String/KMP.md
+<br>
+
+【算法】KMP经典算法，你真的懂了吗？https://github.com/FuGaZn/Algorithms/blob/master/Chapter5_String/KMP.md
+

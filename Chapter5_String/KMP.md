@@ -78,8 +78,8 @@ public class KMP{
         while(sc.hasNext()){
             String str2 = sc.nextLine();//模式串
             int next[] = new int[str2.length()];
-                getNext(next,str2);//求解next数组
-                System.out.println("next数组"+java.util.Arrays.toString(next));
+            getNext(next,str2);//求解next数组
+            System.out.println("next数组"+java.util.Arrays.toString(next));
             List<Integer> pos = new ArrayList<>();
           		//可能存在多个位置起始的字符串与模式串匹配，记录这些在主串中的位置
             ifMatch(str1,str2,next,pos);//字符串匹配过程
