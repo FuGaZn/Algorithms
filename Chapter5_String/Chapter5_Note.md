@@ -482,3 +482,9 @@ public class KMP_DFA {
 
 【算法】KMP经典算法，你真的懂了吗？https://github.com/FuGaZn/Algorithms/blob/master/Chapter5_String/KMP.md
 
+
+
+### Boyer-Moore算法
+
+
+
