@@ -591,3 +591,9 @@ public class RabinKarp {
 }
 ```
 
+<br>
+
+各种字符串查找算法实现成本的总结：
+
+![](../img/5.3.2.jpg)
+
