@@ -486,5 +486,108 @@ public class KMP_DFA {
 
 ### Boyer-Moore算法
 
+```java
+package Code;
 
+public class BoyerMoore {
+    private int[] right; // 记录字母表中每个字符在模式中出现的最靠右的地方
+    private String pat;
+
+    BoyerMoore(String pat) {
+        this.pat = pat;
+        int M = pat.length();
+        int R = 256;
+        right = new int[R];
+        for (int i = 0; i < R; i++)
+            right[i] = -1;
+        for (int i = 0; i < M; i++)
+            right[pat.charAt(i)] = i;
+    }
+
+    public int search(String txt) {
+        int N = txt.length();
+        int M = pat.length();
+        int skip;
+
+        for (int i = 0; i <= N - M; i += skip) {
+            skip = 0;
+            for (int j = M - 1; j >= 0; j--) {
+                if (pat.charAt(j) != txt.charAt(i + j)) {
+                    skip = j - right[txt.charAt(i + j)];
+                    if (skip < 1) skip = 1;
+                    break;
+                }
+            }
+            if (skip == 0) // 匹配成功
+                return i;
+        }
+        return -1;
+    }
+}
+```
+
+<br>
+
+### Rabin-Karp指纹字符串查找算法
+
+```java
+package Code;
+
+import java.math.BigInteger;
+import java.util.Random;
+
+public class RabinKarp {
+    private String pat;
+    private long patHash;   // 模式字符串的散列值
+    private int M;  // 模式字符串的长度
+    private long Q; // 一个很大的素数
+    private int R = 256;
+    private long RM;
+
+    public RabinKarp(String pat) {
+        this.pat = pat;
+        this.M = pat.length();
+        Q = longRandomPrime();
+        RM = 1;
+        for (int i = 1; i <= M - 1; i++) {
+            RM = (R * RM) % Q;
+        }
+        patHash = hash(pat, M);
+    }
+
+    private static long longRandomPrime() {
+        BigInteger prime = BigInteger.probablePrime(31, new Random());
+        return prime.longValue();
+    }
+
+    private long hash(String key, int M) {
+        long h = 0;
+        for (int j = 0; j < M; j++)
+            h = (R * h + key.charAt(j)) % Q;
+        return h;
+    }
+
+    private boolean check(String txt, int i) {
+        for (int j = 0; j < M; j++)
+            if (pat.charAt(j) != txt.charAt(i + j))
+                return false;
+        return true;
+    }
+
+    private int search(String txt) {
+        int N = txt.length();
+        long txtHash = hash(txt, M);
+        if (patHash == txtHash && check(txt, 0))
+            return 0;
+        for (int i = M; i < N; i++) {
+            txtHash = (txtHash + Q - RM * txt.charAt(i - M) % Q) % Q;
+            txtHash = (txtHash * R + txt.charAt(i)) % Q;
+            if (patHash == txtHash)
+                if (check(txt, i - M + 1))
+                    return i - M + 1;
+        }
+        return -1;
+    }
+}
+```
 
